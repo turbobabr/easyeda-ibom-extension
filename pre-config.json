@@ -1,5 +1,5 @@
 {
-  "authorName": "${authorName}",
-  "repo": "${repo}",
-  "user": "${user}"  
+  "authorName": "Andrey Shakhmin",
+  "repo": "easyeda-ibom-extension",
+  "user": "turbobabr"  
 }

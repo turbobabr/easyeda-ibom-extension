@@ -7,5 +7,17 @@
   "icons": {
 		"default": "icon.svg"
 	},		
-	"scripts": ["main.js" ]
+	"scripts": ["main.js" ],
+  "runner": {
+    "menu": {
+      "title": "iBom",
+      "scope": "pcb",
+      "menu": [
+        {
+          "title": "Launch...",
+          "command": "ibom.showInteractiveBOM"
+        }
+      ]
+    }
+  }
 }

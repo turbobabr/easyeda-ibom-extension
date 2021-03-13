@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/${user}/${repo}.git"
+    "url": "git+https://github.com/turbobabr/easyeda-ibom-extension.git"
   },
-  "author": "${authorName}",
+  "author": "Andrey Shakhmin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/${user}/${repo}/issues"
+    "url": "https://github.com/turbobabr/easyeda-ibom-extension/issues"
   },
-  "homepage": "https://github.com/${user}/${repo}#readme",
+  "homepage": "https://github.com/turbobabr/easyeda-ibom-extension#readme",
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
@@ -41,6 +41,7 @@
     "gulp-load-plugins": "^2.0.6",
     "gulp-modify-file": "^1.0.1",
     "gulp-zip": "^5.0.2",
+    "html-loader": "^2.1.2",
     "klaw-sync": "^6.0.0",
     "sass": "^1.32.5",
     "sass-loader": "^10.1.1",
@@ -52,12 +53,12 @@
     "webpack-watch-files-plugin": "^1.1.0"
   },
   "easy": {
-    "name": "Extension name",
-    "id": "extensionid",
-    "description": "Extension description",
-    "homepage": "https://github.com/${user}/${repo}#readme",
-    "username": "${user}",
-    "repo": "${repo}"
+    "name": "Interactive Bom (iBom)",
+    "id": "ibom",
+    "description": "Interactive Bom!",
+    "homepage": "https://github.com/turbobabr/easyeda-ibom-extension#readme",
+    "username": "turbobabr",
+    "repo": "easyeda-ibom-extension"
   },
   "dependencies": {
     "lodash": "^4.17.21"
