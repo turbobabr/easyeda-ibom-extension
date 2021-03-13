@@ -1,0 +1,11 @@
+{
+	"name": "{easy.name}",
+  "description": "${easy.description}",
+  "id": "${easy.id}",
+  "locale": "locale.txt",
+  "author": "${easy.author}",
+  "icons": {
+		"default": "icon.svg"
+	},		
+	"scripts": ["main.js" ]
+}

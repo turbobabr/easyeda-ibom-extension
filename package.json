@@ -1,0 +1,65 @@
+{
+  "name": "easyeda-extension-base-template",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --mode production",
+    "start": "webpack --mode development --watch --env LIVE_RELOAD=yes",
+    "build-live": "webpack --mode production --env LIVE_RELOAD=yes",
+    "live-reload": "npx ./scripts/start-live-reload.js",
+    "bump:patch": "npm version --no-git-tag-version patch",
+    "bump:minor": "npm version --no-git-tag-version minor",
+    "bump:major": "npm version --no-git-tag-version major",
+    "build-docs": "npx ./scripts/build-docs.js",
+    "release": "npm run bump:patch && npm run build && npm run build-docs && npx ./scripts/release.js",
+    "postinstall": "npx ./scripts/pre-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/${user}/${repo}.git"
+  },
+  "author": "${authorName}",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/${user}/${repo}/issues"
+  },
+  "homepage": "https://github.com/${user}/${repo}#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "babel-loader": "^8.2.2",
+    "body-parser": "^1.19.0",
+    "chalk": "^4.1.0",
+    "cors": "^2.8.5",
+    "css-loader": "^5.0.1",
+    "del": "^6.0.0",
+    "express": "^4.17.1",
+    "gulp": "^4.0.2",
+    "gulp-ignore": "^3.0.0",
+    "gulp-json-editor": "^2.5.4",
+    "gulp-load-plugins": "^2.0.6",
+    "gulp-modify-file": "^1.0.1",
+    "gulp-zip": "^5.0.2",
+    "klaw-sync": "^6.0.0",
+    "sass": "^1.32.5",
+    "sass-loader": "^10.1.1",
+    "socket.io": "^3.1.2",
+    "style-loader": "^2.0.0",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.19.0",
+    "webpack-cli": "^4.4.0",
+    "webpack-watch-files-plugin": "^1.1.0"
+  },
+  "easy": {
+    "name": "Extension name",
+    "id": "extensionid",
+    "description": "Extension description",
+    "homepage": "https://github.com/${user}/${repo}#readme",
+    "username": "${user}",
+    "repo": "${repo}"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

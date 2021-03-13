@@ -1,0 +1,1 @@
+# easyeda-extension-base-template

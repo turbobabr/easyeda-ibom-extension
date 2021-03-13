@@ -1,0 +1,5 @@
+{
+  "authorName": "${authorName}",
+  "repo": "${repo}",
+  "user": "${user}"  
+}
