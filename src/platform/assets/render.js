@@ -226,13 +226,31 @@ function drawPolygonShape(ctx, shape, color) {
   ctx.restore();
 }
 
+
+function drawPolylineShape(ctx, shape, color) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = shape.width;
+  if (!("svgpath" in shape)) {
+    ctx.translate(...shape.pos);
+    ctx.rotate(deg2rad(-shape.angle));
+  }
+  ctx.stroke(getPolygonsPath(shape));
+  ctx.restore();
+}
+
 function drawDrawing(ctx, scalefactor, drawing, color) {
+  console.log('draw drawing?');
   if (["segment", "arc", "circle", "curve"].includes(drawing.type)) {
     drawedge(ctx, scalefactor, drawing, color);
   } else if (drawing.type == "polygon") {
     drawPolygonShape(ctx, drawing, color);
-  } else {
+  } else if (drawing.type == "text") {
+    console.log('Text is here')
     drawText(ctx, drawing, color);
+  } else if (drawing.type == "polyline") {
+    console.log('Polyline is here')
+    drawPolylineShape(ctx, drawing, color);
   }
 }
 
@@ -366,7 +384,7 @@ function drawFootprints(canvas, layer, scalefactor, highlight) {
 function drawBgLayer(layername, canvas, layer, scalefactor, edgeColor, polygonColor, textColor) {
   var ctx = canvas.getContext("2d");
   for (var d of pcbdata.drawings[layername][layer]) {
-    if (["segment", "arc", "circle", "curve", "rect"].includes(d.type)) {
+    if (["segment", "arc", "circle", "curve", "rect","polyline"].includes(d.type)) {
       drawedge(ctx, scalefactor, d, edgeColor);
     } else if (d.type == "polygon") {
       drawPolygonShape(ctx, d, polygonColor);
@@ -383,18 +401,24 @@ function drawTracks(canvas, layer, color, highlight) {
   for(var track of pcbdata.tracks[layer]) {
     if (highlight && highlightedNet != track.net) continue;
     ctx.lineWidth = track.width;
-    ctx.beginPath();
-    if ('radius' in track) {
-      ctx.arc(
-          ...track.center,
-          track.radius,
-          deg2rad(track.startangle),
-          deg2rad(track.endangle));
+
+    if(track.type === 'polyline') {
+      drawPolylineShape(ctx,track,color);
     } else {
-      ctx.moveTo(...track.start);
-      ctx.lineTo(...track.end);
+      ctx.beginPath();
+      if ('radius' in track) {
+        ctx.arc(
+            ...track.center,
+            track.radius,
+            deg2rad(track.startangle),
+            deg2rad(track.endangle));
+      } else {
+        ctx.moveTo(...track.start);
+        ctx.lineTo(...track.end);
+      }
+      ctx.stroke();
     }
-    ctx.stroke();
+
   }
 }
 
