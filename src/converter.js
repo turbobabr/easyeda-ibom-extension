@@ -102,6 +102,23 @@ const parseTracks = (data, layerType) => {
   });
 };
 
+const parseVias = (data) => {
+  return _.map(data.VIA, (via) => {
+    return {
+      start: [via.x, via.y],
+      end: [via.x, via.y],
+      width: via.diameter
+    }
+  });
+}
+
+const parseCopper = (data, layerType) => {
+  return [
+    ...parseTracks(data, layerType),
+    ...parseVias(data)
+  ];
+};
+
 const parseArcs = (data, layerType) => {
   return _.map(fetchObjects(data,'ARC',layerType), (arc) => {
     if (arc.d) {
@@ -396,8 +413,8 @@ export const convert = (source, meta, easyBom) => {
       date: meta.date,
     },
     tracks: {
-      F: parseTracks(source,LayerType.Top),
-      B: parseTracks(source,LayerType.Bottom)
+      F: parseCopper(source,LayerType.Top),
+      B: parseCopper(source,LayerType.Bottom)
     },
     zones: {
       F: parseTopZones(source),
