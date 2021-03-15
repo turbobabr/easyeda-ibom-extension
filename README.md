@@ -15,7 +15,7 @@ Comparing to original solution, `iBom for EasyEDA` is available right within `Ea
 
 ## Installation
 
-1. Download [easyeda-ibom-v0.0.4.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.0.4/easyeda-ibom-v0.0.4.zip)
+1. Download [easyeda-ibom-v0.0.5.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.0.5/easyeda-ibom-v0.0.5.zip)
 2. Un-zip the downloaded archive on your hard drive.
 3. Go to `Extension Settings` dialog by using main menu `Advanced -> Extensions -> Extensions Settings...`.
 4. Click `Load Extension...` button and add all the files in from the extracted folder using `Select Files...` button. 
@@ -37,6 +37,8 @@ Just click `iBom -> Generate & Download HTML` menu item in order to get the stan
 
 ![iBom Demo](docs/ibom-stand-alone-generation.gif?raw=true "Demo")
 
+> Note: In case the downloaded file doesn't have `.html` extension - just add it manually. It is some sort of weird browser behaviour for the case to be investigated.
+
 ## Feedback
 
 If you discover  any issue or have any suggestions for improvement of the plugin, please [open an issue](https://github.com/turbobabr/easyeda-ibom-extension/issues) or find me on twitter [@turbobabr](http://twitter.com/turbobabr).
@@ -44,10 +46,9 @@ If you discover  any issue or have any suggestions for improvement of the plugin
 ## Credits 
 
 This solution uses:
-- [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. ⭐⭐⭐⭐⭐
-- A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏👏👏
+- [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. 
+- A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏
 - [svg-path-bbox](https://github.com/mondeja/svg-path-bbox) for calculating various bounding boxes during `EasyEDA` -> `InteractiveHTMLBOM` data conversions.
-
 
 ## License
 

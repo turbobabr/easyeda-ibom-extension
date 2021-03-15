@@ -37,6 +37,8 @@ Just click `iBom -> Generate & Download HTML` menu item in order to get the stan
 
 ![iBom Demo](docs/ibom-stand-alone-generation.gif?raw=true "Demo")
 
+> Note: In case the downloaded file doesn't have `.html` extension - just add it manually. It is some sort of weird browser behaviour for the case to be investigated.
+
 ## Feedback
 
 If you discover  any issue or have any suggestions for improvement of the plugin, please [open an issue](${issuesUrl}) or find me on twitter [@turbobabr](http://twitter.com/turbobabr).
@@ -47,7 +49,6 @@ This solution uses:
 - [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. 
 - A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏
 - [svg-path-bbox](https://github.com/mondeja/svg-path-bbox) for calculating various bounding boxes during `EasyEDA` -> `InteractiveHTMLBOM` data conversions.
-
 
 ## License
 
