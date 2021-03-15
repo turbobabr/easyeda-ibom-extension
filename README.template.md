@@ -1,7 +1,17 @@
 ![Hero](docs/ibom-github-hero.png?raw=true "Logo")
 ===========
 
-intro description
+`iBom for EasyEDA` is a native extension for [EasyEDA](https://easyeda.com/) and [LCEDA: Standard Edition](https://lceda.cn/standard). It is based on the awesome project called [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) designed and built by [qu1ck](https://github.com/qu1ck).
+
+Although [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) already supports generation of `interactive BOMs` from `EasyEDA` projects, but it involves messing with `Python` scripts and requires to host the generated `html` files somewhere. Since my knowledge of `Python === null`, and my favorite tool for designing electronics is `EasyEDA` - I decided to give it a shot and port it as a native extension. 
+
+Comparing to original solution, `iBom for EasyEDA` is available right within `EasyEDA` itself:
+- There is no need to run any `Python` scripts.
+- No need to host the produced `html` files.
+- `iBom` is always accessible by clicking a single menu button from your `PCB` document!
+- It also provides an ability to generate a stand-alone `HTML` representation the same way [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) does out of the box.
+
+> NOTE: This extension is still in **ALPHA/BETA** stage - a lot of things should be done in order to make it fully compatible with `EasyEDA`. 
 
 ## Installation
 
