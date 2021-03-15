@@ -1,4 +1,4 @@
-import { registerCommand } from './easy-api';
+import { registerCommand, getSource } from './easy-api';
 import './styles.scss';
 import frameHTML from './frame.html';
 import { buildIBomHTML } from './html-builder';
@@ -10,7 +10,7 @@ registerCommand('showInteractiveBOM', () => {
   });
 
   setTimeout(() => {
-    buildIBomHTML().then((html) => {
+    buildIBomHTML(getSource()).then((html) => {
       $('#the-frame').attr('srcdoc', html);
     });    
   }, 1);

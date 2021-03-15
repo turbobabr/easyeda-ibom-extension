@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { buildBOM } from './bom-builder';
 
-export const buildIBomHTML = () => {
+export const buildIBomHTML = (source) => {
   const fileURLs = easyeda.extension.instances.ibom.blobURLs;
   const ignoreList = ['main.js', 'icon.svg', 'manifest.json', 'locale.txt'];
 
@@ -52,7 +52,7 @@ export const buildIBomHTML = () => {
     '///POINTER_EVENTS_POLYFILL///': 'pep.js',
     '///CONFIG///': `var config = ${JSON.stringify(defaultConfig)};`,
     '///PCBDATA///': 'pcbdata.txt',
-    // '///PCBDATA///': `var pcbdata = ${JSON.stringify(buildBOM())};`,
+    '///PCBDATA///': `var pcbdata = ${JSON.stringify(buildBOM(source))};`,
     '///UTILJS///': 'util.js',
     '///RENDERJS///': 'render.js',
     '///IBOMJS///': 'ibom.js',
@@ -70,8 +70,6 @@ export const buildIBomHTML = () => {
         html = html.replace(marker, content);
       }
     });
-
-    console.log(html);
     
     return Promise.resolve(html);
   })
