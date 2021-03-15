@@ -9,18 +9,20 @@ function buildKeyForLocalStorageDict() {
 }
 
 var storage;
+var _isLocalStorageUsed = false;
 
 function initStorage(key) {
   try {
     window.localStorage.getItem("blank");
     storage = window.localStorage;    
+    _isLocalStorageUsed = true;
   } catch (e) {
     // localStorage not available
   }
   if (!storage) {
     try {
       window.sessionStorage.getItem("blank");
-      storage = window.sessionStorage;
+      storage = window.sessionStorage;      
     } catch (e) {
       // sessionStorage also not available
     }
@@ -30,50 +32,67 @@ function initStorage(key) {
 
 
 function readStorage(key) {
-  if (storage) {
-
-    try {
-      var dictKey = buildKeyForLocalStorageDict();
-      var obj = JSON.parse(storage.getItem(dictKey));
-      if(!obj || !obj.hasOwnProperty(key)) {
-        return null;
-      }
-
-      return JSON.parse(storage.getItem(dictKey))[key];
-    } catch(e) {
-      console.log('[ibom]: Unable to obtain a value from local storage!');
-      console.log(e);
-    }
-    
-    // Original implementation
-    // return storage.getItem(storagePrefix + key);
-  } else {
+  if(!storage) {
     return null;
   }
+
+  if(!_isLocalStorageUsed) {
+    console.log('WTF!?!?');
+    return storage.getItem(storagePrefix + key);
+  }
+
+  try {
+    var dictKey = buildKeyForLocalStorageDict();
+    var obj = JSON.parse(storage.getItem(dictKey));
+
+    console.log('read',key);
+    console.log(obj);
+
+    if(!obj || !obj.hasOwnProperty(key)) {
+      return null;
+    }
+
+    return JSON.parse(storage.getItem(dictKey))[key];
+  } catch(e) {
+    console.log('[ibom]: Unable to obtain a value from local storage!');
+    console.log(e);
+  }
+  
+  // Original implementation
+  // return storage.getItem(storagePrefix + key);
 }
 
 
 function writeStorage(key, value) {
-  if (storage) {
-    try {
-      var dictKey = buildKeyForLocalStorageDict();
-      if(!storage.getItem(dictKey)) {
-        storage.setItem(dictKey,JSON.stringify({
-          _storagePrefix: storagePrefix
-        }));
-      }
-
-      var obj = JSON.parse(storage.getItem(dictKey));
-      obj[key] = value;
-      storage.setItem(dictKey,JSON.stringify(obj));            
-    } catch(e) {
-      console.log('[ibom]: Unable to write key to local storage!');
-      console.log(e);
-    }
-    
-    // Original implementation
-    // storage.setItem(storagePrefix + key, value);
+  if(!storage) {
+    return;
   }
+
+  if(!_isLocalStorageUsed) {
+    storage.setItem(storagePrefix + key, value);
+    return;
+  }
+
+  console.log('writing',key,value);
+
+  try {
+    var dictKey = buildKeyForLocalStorageDict();
+    if(!storage.getItem(dictKey)) {
+      storage.setItem(dictKey,JSON.stringify({
+        _storagePrefix: storagePrefix
+      }));
+    }
+
+    var obj = JSON.parse(storage.getItem(dictKey));
+    obj[key] = value;
+    storage.setItem(dictKey,JSON.stringify(obj));            
+  } catch(e) {
+    console.log('[ibom]: Unable to write key to local storage!');
+    console.log(e);
+  }
+  
+  // Original implementation
+  // storage.setItem(storagePrefix + key, value);
 }
 
 function fancyDblClickHandler(el, onsingle, ondouble) {
@@ -415,6 +434,7 @@ function loadSettings() {
 }
 
 function overwriteSettings(newSettings) {
+
   initDone = false;
   Object.assign(settings, newSettings);
   writeStorage("bomlayout", settings.bomlayout);
@@ -522,12 +542,13 @@ function initDefaults() {
   settings.darkenWhenChecked = readStorage("darkenWhenChecked") || "";
   populateDarkenWhenCheckedOptions();
 
-  function initBooleanSetting(storageString, def, elementId, func) {
+  function initBooleanSetting(storageString, def, elementId, func) {    
     var b = readStorage(storageString);
+    console.log(storageString,b);
     if (b === null) {
       b = def;
     } else {
-      b = (b == "true");
+      b = (b === true);
     }
     document.getElementById(elementId).checked = b;
     func(b);
