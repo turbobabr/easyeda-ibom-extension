@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import { svgPathBbox } from 'svg-path-bbox';
+import { rectUnion } from './geom-fns';
 
 export const LayerType = {
   Top: "1",
@@ -151,10 +153,14 @@ const parseSolidRegions = (data, layerType) => {
   })
 };
 
-const parseTexts = (data, layerType) => {
+const parseTexts = (data, layerType, ignoreSpecialText = false) => {
   return _.compact(_.map(fetchObjects(data, 'TEXT', layerType), (obj) => {
     const isRef = obj.type === 'P';
     const isVal = obj.type === 'N';
+    if(ignoreSpecialText && (isRef || isVal)) {
+      return;
+    }
+
     if (isRef && obj.display === 'none') {
       return;
     }
@@ -290,14 +296,14 @@ const parseBoardEdges = (data) => {
   ];
 };
 
-const parseSilk = (data, layerType) => {
+const parseSilk = (data, layerType, ignoreSpecialText = false) => {
   return [
     ...parseTracks(data, layerType),
     ...parseArcs(data, layerType),
     ...parseCircles(data, layerType),
     ...parseSolidRegions(data, layerType),
     ...parseSvgNodes(data, layerType),
-    ...parseTexts(data, layerType)
+    ...parseTexts(data, layerType, ignoreSpecialText)
   ];
 }
 
@@ -315,24 +321,44 @@ const parseBoardSilk = (data, layerType) => {
   ];
 };
 
+const parseAndCalcFootprintSize = (data, isTop) => {
+  const silk = parseSilk(data, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);
+  const rects = _.compact(_.map(silk,(item) => {
+    if(!item.svgpath) {
+      return;
+    }
+
+    const bounds = svgPathBbox(item.svgpath);
+    return {
+      x: bounds[0],
+      y: bounds[1],
+      width: bounds[2] - bounds[0],
+      height: bounds[3] - bounds[1]
+    };            
+  }));
+
+  return [unitedRect.width,unitedRect.height];
+}
+
 
 const parseFootprints = (data) => {
   return _.map(data.FOOTPRINT,(footprint) => {
     const { head } = footprint;
     const isTop = head.layerid === LayerType.Top;
 
+    const size = parseAndCalcFootprintSize(footprint, isTop);
     return {
       ref: parseFootprintRef(footprint),
       center: [parseFloat(head.x),parseFloat(head.y)],
       bbox: {
-        pos:  [parseFloat(head.x),parseFloat(head.y)],
+        pos:  [parseFloat(head.x) - size[0] / 2, parseFloat(head.y) - size[1] / 2],        
         angle: 0,
         relpos: [0,0],
-        size: [0,0]
+        size: size
       },
       pads: parsePads(footprint),
       drawings: [],
-      layer: isTop === LayerType.Top ? 'F' : 'B'
+      layer: isTop ? 'F' : 'B'
     }
   });
 }
