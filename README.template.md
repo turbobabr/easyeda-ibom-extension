@@ -25,9 +25,19 @@ Comparing to original solution, `iBom for EasyEDA` is available right within `Ea
 
 usage description
 
+![iBom Demo](docs/ibom-demo.gif?raw=true "Demo")
+
 ## Feedback
 
 If you discover  any issue or have any suggestions for improvement of the plugin, please [open an issue](${issuesUrl}) or find me on twitter [@turbobabr](http://twitter.com/turbobabr).
+
+## Credits 
+
+This solution uses:
+- [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. ⭐⭐⭐⭐⭐
+- A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏👏👏
+- [svg-path-bbox](https://github.com/mondeja/svg-path-bbox) for calculating various bounding boxes during `EasyEDA` -> `InteractiveHTMLBOM` data conversions.
+
 
 ## License
 

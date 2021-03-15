@@ -1,6 +1,6 @@
 {
   "name": "easyeda-ibom-extension",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "scripts": {
     "build": "webpack --mode production",
