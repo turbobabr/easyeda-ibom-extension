@@ -1,4 +1,5 @@
-# easyeda-extension-base-template
+![Hero](docs/ibom-github-hero.png?raw=true "Logo")
+===========
 
 intro description
 
