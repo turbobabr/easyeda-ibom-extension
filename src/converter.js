@@ -151,6 +151,7 @@ const parseTexts = (data, layerType) => {
       type: (isRef || isVal) ? 'text' : 'polyline',
       svgpath: obj.pathStr,
       thickness: parseFloat(obj.strokeWidth),
+      width: parseFloat(obj.strokeWidth),
       ...flags
     };
   }));
