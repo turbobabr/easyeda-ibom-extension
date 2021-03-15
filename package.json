@@ -1,6 +1,6 @@
 {
-  "name": "easyeda-extension-base-template",
-  "version": "1.0.0",
+  "name": "easyeda-ibom-extension",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "build": "webpack --mode production",
