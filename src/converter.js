@@ -349,8 +349,7 @@ const parseBom = (data, easyBom) => {
   const buildCustomValuesList = (custom) => {
     return _.map(customColumns,(column) => {
       const value = custom[column];
-      if(_.isEmpty(value)) {
-        // Have to replace empty(undefined, null) values with empty string in order to make inetractive bom happy with search.
+      if(_.isEmpty(value)) {        
         return " ";
       }
       return value;
@@ -386,14 +385,27 @@ const parseBom = (data, easyBom) => {
     });
   };
 
+  const rows = buildRows(footprintsMetadata,['F','B']);  
+  const customColumnsContainingData = _.compact(_.map(customColumns,(column, index) => {
+    const columnHasData = _.some(rows,(row) => {
+      const values = _.last(row);
+      if(_.isArray(values) && values.length === customColumns.length) {
+        return !_.isEmpty(values[index]) && values[index] !== " ";
+      }
+
+      return false;
+    });
+
+    return columnHasData ? column : null;    
+  }));
+
   return {
-    both: buildRows(footprintsMetadata,['F','B']),
+    both: rows,
     F:  buildRows(footprintsMetadata,['F']),
     B:  buildRows(footprintsMetadata,['B']),
     skipped: [],
-    customColumns
-    // customColumns: []
-  }
+    customColumns: customColumnsContainingData    
+  };
 };
 
 export const convert = (source, meta, easyBom) => {
