@@ -54,9 +54,9 @@
     "webpack-watch-files-plugin": "^1.1.0"
   },
   "easy": {
-    "name": "Interactive Bom (iBom)",
+    "name": "iBom",
     "id": "ibom",
-    "description": "Interactive Bom!",
+    "description": "Embedded Interactive HTML BOM for EasyEDA",
     "homepage": "https://github.com/turbobabr/easyeda-ibom-extension#readme",
     "username": "turbobabr",
     "repo": "easyeda-ibom-extension"

@@ -1,17 +1,11 @@
 import _ from 'lodash';
 import format from 'date-fns/format';
-import {
-  registerCommand,
-  getSource,
-  getActiveTabInfo,
-  getGVars,
-  getBOMFromPCBEditor
-} from './easy-api';
+import { registerCommand, getSource, getActiveTabInfo, getGVars, getBOMFromPCBEditor, makeCommandId} from './easy-api';
+import { isRunnerAround } from './runner-api';
 import './styles.scss';
 import frameHTML from './frame.html';
-import {
-  buildIBomHTML
-} from './html-builder';
+import { buildIBomHTML } from './html-builder';
+
 
 const fetchMeta = () => {
   const meta = {
@@ -28,7 +22,7 @@ const fetchMeta = () => {
 
   const gVars = getGVars();
   if (gVars) {
-    const username = _.get(gVars, 'globalVariableCookieData.easyeda_user.username');    
+    const username = _.get(gVars, 'globalVariableCookieData.easyeda_user.username');
     if (username) {
       meta.owner = username;
     }
@@ -42,14 +36,14 @@ registerCommand('showInteractiveBOM', () => {
   $('#ibom-close-button').click(() => {
     $('#ibom-container').remove();
   });
-  
+
   fetchMeta().then((meta) => {
     const bom = getBOMFromPCBEditor();
     buildIBomHTML(getSource(), meta, bom).then((html) => {
       setTimeout(() => {
         $('#the-frame').attr('srcdoc', html);
-      },1);      
-    });    
+      }, 1);
+    });
   })
 });
 
@@ -57,18 +51,38 @@ registerCommand('showInteractiveBOM', () => {
 registerCommand('generateAndDownload', () => {
   fetchMeta().then((meta) => {
     const bom = getBOMFromPCBEditor();
-    buildIBomHTML(getSource(), meta, bom).then((html) => {            
+    buildIBomHTML(getSource(), meta, bom).then((html) => {
       const fakeLinkTag = document.createElement('a');
       document.body.appendChild(fakeLinkTag);
       fakeLinkTag.download = `${meta.title}_rev${meta.revision}`;
       fakeLinkTag.href = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
-      fakeLinkTag.click();          
-      document.removeChild(fakeLinkTag);  
-    });    
+      fakeLinkTag.click();
+      document.removeChild(fakeLinkTag);
+    });
   })
 });
 
-registerCommand('debug', () => {
-  console.log('BOM:');
-  console.log(JSON.stringify(getBOMFromPCBEditor(),null,4));
+registerCommand('visitGithubPage', () => {
+  window.open('https://github.com/turbobabr/easyeda-ibom-extension', '_blank');  
 });
+
+if(!isRunnerAround() || true) {
+  api('createToolbarButton', {    
+    fordoctype: 'pcb',
+    menu: [
+      {
+        text: 'Launch...',
+        cmd: makeCommandId('showInteractiveBOM')
+      },
+      {
+        text: 'Generate & Download HTML',
+        cmd: makeCommandId('generateAndDownload')
+      },
+      '-',
+      {
+        text: 'Visit Github Page...',
+        cmd: makeCommandId('visitGithubPage')
+      }
+    ]
+  });
+}

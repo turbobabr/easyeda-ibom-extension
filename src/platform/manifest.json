@@ -23,8 +23,8 @@
         },
         "-",
         {
-          "title": "Debug!",
-          "command": "ibom.debug"
+          "title": "Visit Github Page",
+          "command": "ibom.visitGithubPage"
         }
       ]
     }
