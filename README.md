@@ -25,6 +25,8 @@ Comparing to original solution, `iBom for EasyEDA` is available right within `Ea
 
 usage description
 
+![iBom Demo](docs/ibom-demo.gif?raw=true "Demo")
+
 ## Feedback
 
 If you discover  any issue or have any suggestions for improvement of the plugin, please [open an issue](https://github.com/turbobabr/easyeda-ibom-extension/issues) or find me on twitter [@turbobabr](http://twitter.com/turbobabr).
