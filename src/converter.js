@@ -348,7 +348,12 @@ const parseBom = (data, easyBom) => {
 
   const buildCustomValuesList = (custom) => {
     return _.map(customColumns,(column) => {
-      return custom[column];
+      const value = custom[column];
+      if(_.isEmpty(value)) {
+        // Have to replace empty(undefined, null) values with empty string in order to make inetractive bom happy with search.
+        return " ";
+      }
+      return value;
     });
   };
 
@@ -387,6 +392,7 @@ const parseBom = (data, easyBom) => {
     B:  buildRows(footprintsMetadata,['B']),
     skipped: [],
     customColumns
+    // customColumns: []
   }
 };
 
