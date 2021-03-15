@@ -57,7 +57,7 @@ registerCommand('generateAndDownload', () => {
       fakeLinkTag.download = `${meta.title}_rev${meta.revision}`;
       fakeLinkTag.href = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
       fakeLinkTag.click();
-      document.removeChild(fakeLinkTag);
+      document.body.removeChild(fakeLinkTag);
     });
   })
 });
