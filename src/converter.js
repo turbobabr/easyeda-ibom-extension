@@ -337,6 +337,7 @@ const parseAndCalcFootprintSize = (data, isTop) => {
     };            
   }));
 
+  const unitedRect = rectUnion(rects);
   return [unitedRect.width,unitedRect.height];
 }
 
