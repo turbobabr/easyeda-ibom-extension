@@ -26,3 +26,8 @@ export const doCommand = (command, args = []) => {
 export const getSource = () => {
   return api('getSource',{ type:'json'});
 };
+
+export const getActiveTabInfo = () => {
+  return callByEditor({func:'getActiveTabInfo',args:[]});
+};
+

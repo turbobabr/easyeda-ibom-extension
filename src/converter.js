@@ -1,11 +1,6 @@
 import _ from 'lodash';
 
-
-const mm = (value) => {
-  return value;
-};
-
-const LayerType = {
+export const LayerType = {
   Top: "1",
   Bottom: "2",
   TopSilk: "3",
@@ -69,10 +64,10 @@ const fetchObjects = (data, nodeName, layerType) => {
 const parseEasyBBox = (bbox) => {
   const margin = 5;
   return {
-    minx: mm(bbox.x) - margin,
-    miny: mm(bbox.y) - margin,
-    maxx: mm(bbox.x + bbox.width) + margin,
-    maxy: mm(bbox.y + bbox.height) + margin
+    minx: bbox.x - margin,
+    miny: bbox.y - margin,
+    maxx: bbox.x + bbox.width + margin,
+    maxy: bbox.y + bbox.height + margin
   };
 };
 
@@ -123,9 +118,9 @@ const parseCircles = (data, layerType) => {
   return _.map(fetchObjects(data,'CIRCLE',layerType), (circle) => {
     return {
       type: 'circle',
-      start: [mm(circle.cx), mm(circle.cy)],
-      radius: mm(circle.r),
-      width: mm(circle.strokeWidth)
+      start: [circle.cx, circle.cy],
+      radius: circle.r,
+      width: circle.strokeWidth
     }
   });
 };
@@ -321,8 +316,6 @@ const parseFootprints = (data) => {
 }
 
 
-
-
 const parseBom = (data) => {
   const footprintsMetadata = _.map(_.values(data.FOOTPRINT),(footprint,index) => {
     return {
@@ -349,7 +342,7 @@ const parseBom = (data) => {
   }
 };
 
-export const convert = (source) => {
+export const convert = (source, meta) => {
   return {
     ibom_version: 'v2.3-50-g53ae\n',
     edges_bbox: parseEasyBBox(source.BBox),
@@ -366,10 +359,10 @@ export const convert = (source) => {
     },
     footprints: parseFootprints(source),
     metadata: {
-      title: "Test PCB",
-      revision: "rev 1",
-      company: "Horns and Hoofs",
-      date: "2019-04-18",
+      title: meta.title,
+      revision: meta.revision,
+      company: meta.owner,
+      date: meta.date,
     },
     tracks: {
       F: parseTracks(source,LayerType.Top),
@@ -383,7 +376,3 @@ export const convert = (source) => {
     bom: parseBom(source),
   };
 };
-
-export const buildBOM = (source) => {
-  return convert(source);
-}

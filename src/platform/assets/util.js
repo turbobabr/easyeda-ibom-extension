@@ -1,13 +1,19 @@
 /* Utility functions */
 
-var storagePrefix = 'KiCad_HTML_BOM__' + pcbdata.metadata.title + '__' +
+var storagePrefix = 'ibom__' + pcbdata.metadata.title + '__' +
   pcbdata.metadata.revision + '__#';
+
+function buildKeyForLocalStorageDict() {
+  // return 'ibom_' + md5(storagePrefix);    
+  return storagePrefix;
+}
+
 var storage;
 
 function initStorage(key) {
   try {
     window.localStorage.getItem("blank");
-    storage = window.localStorage;
+    storage = window.localStorage;    
   } catch (e) {
     // localStorage not available
   }
@@ -21,17 +27,52 @@ function initStorage(key) {
   }
 }
 
+
+
 function readStorage(key) {
   if (storage) {
-    return storage.getItem(storagePrefix + key);
+
+    try {
+      var dictKey = buildKeyForLocalStorageDict();
+      var obj = JSON.parse(storage.getItem(dictKey));
+      if(!obj || !obj.hasOwnProperty(key)) {
+        return null;
+      }
+
+      return JSON.parse(storage.getItem(dictKey))[key];
+    } catch(e) {
+      console.log('[ibom]: Unable to obtain a value from local storage!');
+      console.log(e);
+    }
+    
+    // Original implementation
+    // return storage.getItem(storagePrefix + key);
   } else {
     return null;
   }
 }
 
+
 function writeStorage(key, value) {
   if (storage) {
-    storage.setItem(storagePrefix + key, value);
+    try {
+      var dictKey = buildKeyForLocalStorageDict();
+      if(!storage.getItem(dictKey)) {
+        storage.setItem(dictKey,JSON.stringify({
+          _storagePrefix: storagePrefix
+        }));
+      }
+
+      var obj = JSON.parse(storage.getItem(dictKey));
+      obj[key] = value;
+      storage.setItem(dictKey,JSON.stringify(obj));            
+    } catch(e) {
+      console.log('[ibom]: Unable to write key to local storage!');
+      console.log(e);
+    }
+    
+    // Original implementation
+    // storage.setItem(storagePrefix + key, value);
   }
 }
 
@@ -496,7 +537,7 @@ function initDefaults() {
   initBooleanSetting("fabricationVisible", config.show_fabrication, "fabricationCheckbox", fabricationVisible);
   initBooleanSetting("silkscreenVisible", config.show_silkscreen, "silkscreenCheckbox", silkscreenVisible);
   initBooleanSetting("referencesVisible", true, "referencesCheckbox", referencesVisible);
-  initBooleanSetting("valuesVisible", true, "valuesCheckbox", valuesVisible);
+  initBooleanSetting("valuesVisible", false, "valuesCheckbox", valuesVisible);
   if ("tracks" in pcbdata) {
     initBooleanSetting("tracksVisible", true, "tracksCheckbox", tracksVisible);
     initBooleanSetting("zonesVisible", true, "zonesCheckbox", zonesVisible);

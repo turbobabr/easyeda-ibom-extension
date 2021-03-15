@@ -16,6 +16,15 @@
         {
           "title": "Launch...",
           "command": "ibom.showInteractiveBOM"
+        },
+        {
+          "title": "Generate & Download HTML",
+          "command": "ibom.generateAndDownload"
+        },
+        "-",
+        {
+          "title": "Debug!",
+          "command": "ibom.debug"
         }
       ]
     }
