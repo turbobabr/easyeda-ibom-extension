@@ -23,9 +23,19 @@ Comparing to original solution, `iBom for EasyEDA` is available right within `Ea
 
 ## Usage
 
-usage description
+### Within EasyEDA
+
+In order to launch `iBom` within the editor itself - just click on `iBom -> Launch...` menu item:
 
 ![iBom Demo](docs/ibom-demo.gif?raw=true "Demo")
+
+You can always dismiss  the `iBom` view by clicking on the little `close` button located in the right-top corner of the panel.
+
+### Generating stand-alone HTML representation
+
+Just click `iBom -> Generate & Download HTML` menu item in order to get the stand-alone representation of your `PCB` document:
+
+![iBom Demo](docs/ibom-stand-alone-generation.gif?raw=true "Demo")
 
 ## Feedback
 
@@ -34,8 +44,8 @@ If you discover  any issue or have any suggestions for improvement of the plugin
 ## Credits 
 
 This solution uses:
-- [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. ⭐⭐⭐⭐⭐
-- A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏👏👏
+- [InteractiveHtmlBom](https://github.com/openscopeproject/InteractiveHtmlBom) as a core component. 
+- A `"hackable"` nature of `EasyEDA/LCEDA` - thank you guys for allowing us messing with the product! 👏
 - [svg-path-bbox](https://github.com/mondeja/svg-path-bbox) for calculating various bounding boxes during `EasyEDA` -> `InteractiveHTMLBOM` data conversions.
 
 
