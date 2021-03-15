@@ -4,7 +4,7 @@ intro description
 
 ## Installation
 
-1. Download [easyeda-ibom-v0.0.2.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.0.2/easyeda-ibom-v0.0.2.zip)
+1. Download [easyeda-ibom-v0.0.3.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.0.3/easyeda-ibom-v0.0.3.zip)
 2. Un-zip the downloaded archive on your hard drive.
 3. Go to `Extension Settings` dialog by using main menu `Advanced -> Extensions -> Extensions Settings...`.
 4. Click `Load Extension...` button and add all the files in from the extracted folder using `Select Files...` button. 
