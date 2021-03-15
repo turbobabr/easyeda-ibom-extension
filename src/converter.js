@@ -227,9 +227,13 @@ const parseZones = (data, layerType) => {
     layerid: layerType
   });
 
-  return _.flatten(_.map(zones,(zone) => {
-    // FIXME: Should be try / catched!
-    const paths = _.flatten(JSON.parse(zone.fillData));
+  return _.flatten(_.map(zones,(zone) => {    
+    let paths = [];
+    try {
+      paths = _.flatten(JSON.parse(zone.fillData));
+    } catch(e) {
+      console.log('[ibom]: Warning! Something is wrong with zones parsing!');
+    }    
     return _.map(paths,(path) => {
       return {
         net: zone.net,
@@ -316,21 +320,46 @@ const parseFootprints = (data) => {
 }
 
 
-const parseBom = (data) => {
+const parseBom = (data, easyBom) => {
+  const customColumns = [
+    "BOM_Manufacturer",
+    "BOM_Manufacturer Part",
+    "BOM_Supplier",
+    "BOM_Supplier Part"
+  ];
+
+  const buildCustomValuesList = (custom) => {
+    return _.map(customColumns,(column) => {
+      return custom[column];
+    });
+  };
+
+  const fetchEasyBOMRowCustomParams = (value, pkg) => {
+    const row = _.find(easyBom,{ value, package: pkg });
+    if(!row) {
+      return {};
+    }
+
+    return row.customPara;
+  };
+
   const footprintsMetadata = _.map(_.values(data.FOOTPRINT),(footprint,index) => {
+    const info = parseFootprintInfo(footprint);
     return {
-      ...parseFootprintInfo(footprint),
+      ...info,
       id: index,
-      layer: footprint.head.layerid === LayerType.Top ? 'F' : 'B'
+      layer: footprint.head.layerid === LayerType.Top ? 'F' : 'B'      
     };
   });
 
   const buildRows = (footprintsMetadata, layers) => {
-    const both = _.groupBy(_.filter(footprintsMetadata, meta => _.includes(layers,meta.layer)),'value');
-    return _.map(both,(footprints,key) => {
-      return [footprints.length, key, footprints[0].package,_.map(footprints,(fpt) => {
+    const both = _.groupBy(_.filter(footprintsMetadata, meta => _.includes(layers,meta.layer)),obj => `${obj.value}+${obj.meta}`);    
+    return _.map(both,(footprints) => {
+      const value = footprints[0].value; // FIXME: Need a guard here!
+      const pkg = footprints[0].package; // FIXME: Need a guard here!
+      return [footprints.length, value, pkg,_.map(footprints,(fpt) => {
         return [fpt.ref,fpt.id];
-      })];
+      }),buildCustomValuesList(fetchEasyBOMRowCustomParams(value,pkg))];
     });
   };
 
@@ -338,11 +367,12 @@ const parseBom = (data) => {
     both: buildRows(footprintsMetadata,['F','B']),
     F:  buildRows(footprintsMetadata,['F']),
     B:  buildRows(footprintsMetadata,['B']),
-    skipped: []
+    skipped: [],
+    customColumns
   }
 };
 
-export const convert = (source, meta) => {
+export const convert = (source, meta, easyBom) => {
   return {
     ibom_version: 'v2.3-50-g53ae\n',
     edges_bbox: parseEasyBBox(source.BBox),
@@ -373,6 +403,6 @@ export const convert = (source, meta) => {
       B: parseBottomZones(source)
     },
     nets: parseNets(source),
-    bom: parseBom(source),
+    bom: parseBom(source, easyBom),
   };
 };

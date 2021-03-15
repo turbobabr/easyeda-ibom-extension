@@ -109,3 +109,6 @@ dist
 # Releases
 releases/
 
+# Temp
+temp/
+

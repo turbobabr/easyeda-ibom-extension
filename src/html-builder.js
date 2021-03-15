@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { convert } from './converter';
 
-export const buildIBomHTML = (source, meta) => {
+export const buildIBomHTML = (source, meta, bom) => {
   const fileURLs = easyeda.extension.instances.ibom.blobURLs;
   const ignoreList = ['main.js', 'icon.svg', 'manifest.json', 'locale.txt'];
 
@@ -29,6 +29,7 @@ export const buildIBomHTML = (source, meta) => {
     });
   };
 
+  const pcbdata = convert(source, meta, bom);
 
   const defaultConfig = {
     "show_fabrication": false,
@@ -41,7 +42,8 @@ export const buildIBomHTML = (source, meta) => {
     "checkboxes": "Sourced,Placed",
     "show_silkscreen": true,
     "show_pads": true,
-    "layer_view": "FB"
+    "layer_view": "FB",
+    "extra_fields": pcbdata.bom.customColumns
   };
 
   const replacePlan = {
@@ -52,7 +54,7 @@ export const buildIBomHTML = (source, meta) => {
     '///POINTER_EVENTS_POLYFILL///': 'pep.js',
     '///CONFIG///': `var config = ${JSON.stringify(defaultConfig)};`,
     '///PCBDATA///': 'pcbdata.txt',
-    '///PCBDATA///': `var pcbdata = ${JSON.stringify(convert(source, meta))};`,
+    '///PCBDATA///': `var pcbdata = ${JSON.stringify(pcbdata)};`,
     '///UTILJS///': 'util.js',
     '///RENDERJS///': 'render.js',
     '///IBOMJS///': 'ibom.js',

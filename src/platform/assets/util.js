@@ -3,8 +3,7 @@
 var storagePrefix = 'ibom__' + pcbdata.metadata.title + '__' +
   pcbdata.metadata.revision + '__#';
 
-function buildKeyForLocalStorageDict() {
-  // return 'ibom_' + md5(storagePrefix);    
+function buildKeyForLocalStorageDict() {  
   return storagePrefix;
 }
 
@@ -36,18 +35,13 @@ function readStorage(key) {
     return null;
   }
 
-  if(!_isLocalStorageUsed) {
-    console.log('WTF!?!?');
+  if(!_isLocalStorageUsed) {    
     return storage.getItem(storagePrefix + key);
   }
 
   try {
     var dictKey = buildKeyForLocalStorageDict();
-    var obj = JSON.parse(storage.getItem(dictKey));
-
-    console.log('read',key);
-    console.log(obj);
-
+    var obj = JSON.parse(storage.getItem(dictKey));    
     if(!obj || !obj.hasOwnProperty(key)) {
       return null;
     }
@@ -72,8 +66,6 @@ function writeStorage(key, value) {
     storage.setItem(storagePrefix + key, value);
     return;
   }
-
-  console.log('writing',key,value);
 
   try {
     var dictKey = buildKeyForLocalStorageDict();
@@ -544,7 +536,6 @@ function initDefaults() {
 
   function initBooleanSetting(storageString, def, elementId, func) {    
     var b = readStorage(storageString);
-    console.log(storageString,b);
     if (b === null) {
       b = def;
     } else {

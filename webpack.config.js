@@ -24,6 +24,10 @@ module.exports = env => {
             esModule: true
           }
         },
+        {
+          test: /\.svg$/,
+          loader: 'svg-inline-loader'
+        }
       ]
     },
     resolve: {

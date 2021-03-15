@@ -24,10 +24,28 @@ export const doCommand = (command, args = []) => {
 };
 
 export const getSource = () => {
-  return api('getSource',{ type:'json'});
+  return api('getSource', {
+    type: 'json'
+  });
 };
 
 export const getActiveTabInfo = () => {
-  return callByEditor({func:'getActiveTabInfo',args:[]});
+  return callByEditor({
+    func: 'getActiveTabInfo',
+    args: []
+  });
 };
 
+export const getGVars = () => {
+  return callByEditor({
+    func: "getGvars",
+    args: []
+  });
+};
+
+export const getBOMFromPCBEditor = () => {
+  return api('editorCall', {
+    cmd: 'getBOMFromPCBEditor',
+    args: []
+  });
+};
