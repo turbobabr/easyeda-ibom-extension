@@ -64,6 +64,7 @@
   "dependencies": {
     "date-fns": "^2.19.0",
     "lodash": "^4.17.21",
-    "svg-path-bbox": "^0.2.0"
+    "svg-path-bbox": "^0.2.0",
+    "svgpath": "^2.3.1"
   }
 }

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { svgPathBbox } from 'svg-path-bbox';
 import { rectUnion } from './geom-fns';
+const svgPathTransform = require('svgpath');
 
 export const LayerType = {
   Top: "1",
@@ -135,8 +136,15 @@ const parseArcs = (data, layerType) => {
 
 const parseCircles = (data, layerType) => {
   return _.map(fetchObjects(data,'CIRCLE',layerType), (circle) => {
+    // FIXME: Refactor!
+    const cx = circle.cx;
+    const cy = circle.cy
+    const r = circle.r;
+
+    const path = `M ${cx}, ${cy} m ${-r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`;
     return {
       type: 'circle',
+      _svgpath: path, // This path is used in bbox calculation routine only.
       start: [circle.cx, circle.cy],
       radius: circle.r,
       width: circle.strokeWidth
@@ -236,7 +244,7 @@ const parsePads = (data) => {
       layers: mapLayerType(pad.layerid),
       pos: [pad.x,pad.y],
       size: [pad.width,pad.height],
-      angle: pad.rotation,
+      angle: - pad.rotation,
       pin1: pad.number === '1' ? 1 : undefined,
       shape: mapShape(pad.shape),
       type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
@@ -321,24 +329,38 @@ const parseBoardSilk = (data, layerType) => {
   ];
 };
 
-const parseAndCalcFootprintSize = (data, isTop) => {
-  const silk = parseSilk(data, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);
+// FIXME: Refactor - should go to
+const bboxToRect = (bbox) => {
+  return {
+    x: bbox[0],
+    y: bbox[1],
+    width: bbox[2] - bbox[0],
+    height: bbox[3] - bbox[1]
+  };
+};
+
+const parseFootprintRectBeforeRotation = (footprint, isTop) => {
+  const silk = parseSilk(footprint, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);
+  
   const rects = _.compact(_.map(silk,(item) => {
-    if(!item.svgpath) {
+    if(!item.svgpath && !item._svgpath) {
       return;
     }
 
-    const bounds = svgPathBbox(item.svgpath);
-    return {
-      x: bounds[0],
-      y: bounds[1],
-      width: bounds[2] - bounds[0],
-      height: bounds[3] - bounds[1]
-    };            
+    const sourceSvgPath = item._svgpath || item.svgpath;
+
+    const origin = {
+      x: parseFloat(footprint.head.x),
+      y: parseFloat(footprint.head.y)
+    };
+
+    const rotation = parseFloat(footprint.head.rotation || '0');
+    const transformedPath = svgPathTransform(sourceSvgPath).rotate(rotation,origin.x,origin.y).toString();
+    
+    return bboxToRect(svgPathBbox(transformedPath))
   }));
 
-  const unitedRect = rectUnion(rects);
-  return [unitedRect.width,unitedRect.height];
+  return rectUnion(rects)
 }
 
 
@@ -347,15 +369,19 @@ const parseFootprints = (data) => {
     const { head } = footprint;
     const isTop = head.layerid === LayerType.Top;
 
-    const size = parseAndCalcFootprintSize(footprint, isTop);
+    const rect = parseFootprintRectBeforeRotation(footprint, isTop);
+    const x = parseFloat(head.x);
+    const y = parseFloat(head.y);
+    const rotation = parseFloat(head.rotation || '0');
+
     return {
       ref: parseFootprintRef(footprint),
-      center: [parseFloat(head.x),parseFloat(head.y)],
+      center: [x,y],
       bbox: {
-        pos:  [parseFloat(head.x) - size[0] / 2, parseFloat(head.y) - size[1] / 2],        
-        angle: 0,
-        relpos: [0,0],
-        size: size
+        pos:  [x, y],        
+        angle: rotation,
+        relpos: [rect.x - x,rect.y - y],
+        size: [rect.width,rect.height]
       },
       pads: parsePads(footprint),
       drawings: [],
