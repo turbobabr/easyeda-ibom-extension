@@ -53,7 +53,6 @@ export const buildIBomHTML = (source, meta, bom) => {
     '///LZ-STRING///': 'lz-string.js',
     '///POINTER_EVENTS_POLYFILL///': 'pep.js',
     '///CONFIG///': `var config = ${JSON.stringify(defaultConfig)};`,
-    '///PCBDATA///': 'pcbdata.txt',
     '///PCBDATA///': `var pcbdata = ${JSON.stringify(pcbdata)};`,
     '///UTILJS///': 'util.js',
     '///RENDERJS///': 'render.js',
