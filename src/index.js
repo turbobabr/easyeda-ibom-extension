@@ -66,7 +66,7 @@ registerCommand('visitGithubPage', () => {
   window.open('https://github.com/turbobabr/easyeda-ibom-extension', '_blank');  
 });
 
-if(!isRunnerAround() || true) {
+if(!isRunnerAround()) {
   api('createToolbarButton', {    
     fordoctype: 'pcb',
     menu: [
