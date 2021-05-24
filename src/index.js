@@ -54,7 +54,7 @@ registerCommand('generateAndDownload', () => {
     buildIBomHTML(getSource(), meta, bom).then((html) => {
       const fakeLinkTag = document.createElement('a');
       document.body.appendChild(fakeLinkTag);
-      fakeLinkTag.download = `${meta.title}_rev${meta.revision}`;
+      fakeLinkTag.download = `${meta.title}_rev${meta.revision}.html`;
       fakeLinkTag.href = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
       fakeLinkTag.click();
       document.body.removeChild(fakeLinkTag);
