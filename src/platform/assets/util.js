@@ -456,6 +456,8 @@ function overwriteSettings(newSettings) {
   document.getElementById("dnpOutlineCheckbox").checked = settings.renderDnpOutline;
   setRedrawOnDrag(settings.redrawOnDrag);
   document.getElementById("dragCheckbox").checked = settings.redrawOnDrag;
+  setShowCrosshair(settings.showCrosshair);
+  document.getElementById("crosshairCheckbox").checked = settings.showCrosshair;
   setDarkMode(settings.darkMode);
   document.getElementById("darkmodeCheckbox").checked = settings.darkMode;
   setHighlightPin1(settings.highlightpin1);
@@ -560,6 +562,7 @@ function initDefaults() {
   }
   initBooleanSetting("dnpOutline", false, "dnpOutlineCheckbox", dnpOutline);
   initBooleanSetting("redrawOnDrag", config.redraw_on_drag, "dragCheckbox", setRedrawOnDrag);
+  initBooleanSetting("showCrosshair", config.show_crosshair, "crosshairCheckbox", setShowCrosshair);
   initBooleanSetting("darkmode", config.dark_mode, "darkmodeCheckbox", setDarkMode);
   initBooleanSetting("highlightpin1", config.highlight_pin1, "highlightpin1Checkbox", setHighlightPin1);
   settings.boardRotation = readStorage("boardRotation");

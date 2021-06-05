@@ -351,6 +351,21 @@ function drawFootprint(ctx, layer, scalefactor, footprint, padColor, padHoleColo
       drawPadHole(ctx, pad, padHoleColor);
     }
   }
+  // draw crosshair
+  if (highlight && settings.showCrosshair) {
+    ctx.globalAlpha = 0.75;
+    ctx.lineWidth = 4 / scalefactor;
+    ctx.strokeStyle = padColor;
+    ctx.beginPath();
+    ctx.moveTo(footprint.center[0]-4000, footprint.center[1]);
+    ctx.lineTo(footprint.center[0]+4000, footprint.center[1]);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(footprint.center[0], footprint.center[1]-4000);
+    ctx.lineTo(footprint.center[0], footprint.center[1]+4000);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
 }
 
 function drawEdgeCuts(canvas, scalefactor) {
@@ -975,6 +990,11 @@ function addMouseHandlers(div, layerdict) {
 function setRedrawOnDrag(value) {
   settings.redrawOnDrag = value;
   writeStorage("redrawOnDrag", value);
+}
+
+function setShowCrosshair(value) {
+  settings.showCrosshair = value;
+  writeStorage("showCrosshair", value);
 }
 
 function setBoardRotation(value) {
