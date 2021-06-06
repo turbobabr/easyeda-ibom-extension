@@ -12,7 +12,7 @@
     "menu": {
       "title": "iBom",
       "scope": "pcb",
-      "menu": [
+      "items": [
         {
           "title": "Launch...",
           "command": "ibom.showInteractiveBOM"
