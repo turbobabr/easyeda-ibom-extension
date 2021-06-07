@@ -11,6 +11,7 @@ var highlightHandlers = [];
 var footprintIndexToHandler = {};
 var netsToHandler = {};
 var highlightedFootprints = [];
+var highlightedOrphanPads = [];
 var highlightedNet = null;
 var lastClicked;
 
@@ -187,7 +188,8 @@ function clearHighlightedFootprints() {
   if (currentHighlightedRowId) {
     document.getElementById(currentHighlightedRowId).classList.remove("highlighted");
     currentHighlightedRowId = null;
-    highlightedFootprints = [];
+    highlightedFootprints = [];  
+    highlightedOrphanPads = [];  
     highlightedNet = null;
   }
 }

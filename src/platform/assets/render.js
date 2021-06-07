@@ -376,6 +376,43 @@ function drawEdgeCuts(canvas, scalefactor) {
   }
 }
 
+function drawOrphanPads(canvas, layer, scalefactor, highlight, highlightedPads) {
+  if (!settings.renderPads) {
+    return;
+  }
+
+  highlightedPads = highlightedPads || [];
+
+  var ctx = canvas.getContext("2d");
+  ctx.save();
+  ctx.lineWidth = 3 / scalefactor;
+  var style = getComputedStyle(topmostdiv);
+  var padColor = style.getPropertyValue('--pad-color');
+  var padHoleColor = style.getPropertyValue('--pad-hole-color');  
+  if (highlight) {
+    padColor = style.getPropertyValue('--pad-color-highlight');
+    outlineColor = style.getPropertyValue('--pin1-outline-color-highlight');
+  }
+
+  var i = 0;
+  for (var pad of pcbdata.pads) {
+    if (pad.layers.includes(layer)) {
+      var outline = settings.renderDnpOutline;
+      if (!highlight || highlightedPads.includes(i)) {
+        drawPad(ctx, pad, padColor, outline); 
+      }     
+    }
+
+    i++;
+  }
+  
+  for (var pad of pcbdata.pads) {
+    drawPadHole(ctx, pad, padHoleColor);
+  }  
+
+  ctx.restore();
+}
+
 function drawFootprints(canvas, layer, scalefactor, highlight) {
   var ctx = canvas.getContext("2d");
   ctx.lineWidth = 3 / scalefactor;
@@ -506,11 +543,24 @@ function drawHighlightsOnLayer(canvasdict, clear = true) {
   if (clear) {
     clearCanvas(canvasdict.highlight);
   }
+  
   if (highlightedFootprints.length > 0) {
     drawFootprints(canvasdict.highlight, canvasdict.layer,
       canvasdict.transform.s * canvasdict.transform.zoom, true);
   }
+
   if (highlightedNet !== null) {
+    var highlightedPads = [];
+    for(var i = 0; i < pcbdata.pads.length; i++) {
+      var pad = pcbdata.pads[i];
+      if(pad.net === highlightedNet) {
+        highlightedPads.push(i);
+      }
+    }
+    
+    drawOrphanPads(canvasdict.highlight, canvasdict.layer,
+      canvasdict.transform.s * canvasdict.transform.zoom, true, highlightedPads);
+
     drawNets(canvasdict.highlight, canvasdict.layer, true);
   }
 }
@@ -528,8 +578,10 @@ function drawBackground(canvasdict, clear = true) {
   }
 
   drawNets(canvasdict.bg, canvasdict.layer, false);
-  drawFootprints(canvasdict.bg, canvasdict.layer,
-    canvasdict.transform.s * canvasdict.transform.zoom, false);
+
+  drawOrphanPads(canvasdict.bg, canvasdict.layer, canvasdict.transform.s * canvasdict.transform.zoom, false);
+
+  drawFootprints(canvasdict.bg, canvasdict.layer, canvasdict.transform.s * canvasdict.transform.zoom, false);
 
   drawEdgeCuts(canvasdict.bg, canvasdict.transform.s);
 
@@ -739,11 +791,20 @@ function netHitScan(layer, x, y) {
   }
   // Check pads
   if (settings.renderPads) {
+
+    // Footprints containing pads
     for (var footprint of pcbdata.footprints) {
       for(var pad of footprint.pads) {
         if (pad.layers.includes(layer) && pointWithinPad(x, y, pad)) {
           return pad.net;
         }
+      }
+    }
+
+    // Orphan pads
+    for(var pad of pcbdata.pads) {
+      if (pad.layers.includes(layer) && pointWithinPad(x, y, pad)) {
+        return pad.net;
       }
     }
   }

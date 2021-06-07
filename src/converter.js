@@ -491,6 +491,7 @@ export const convert = (source, meta, easyBom) => {
       F: parseTopZones(source),
       B: parseBottomZones(source)
     },
+    pads: parsePads(source) || [],
     nets: parseNets(source),
     bom: parseBom(source, easyBom),
   };
