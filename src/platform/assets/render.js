@@ -25,11 +25,23 @@ function drawText(ctx, text, color) {
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   ctx.lineWidth = text.thickness;
-  if ("svgpath" in text) {
-    ctx.stroke(new Path2D(text.svgpath));
+
+  console.log(text);
+
+  if ("svgpath" in text) {    
+    // TODO: This path must be cached!
+    const path = new Path2D(text.svgpath);
+    if(text.useTrueTypeFontRendering) {      
+      console.log('do we ever get in here?');
+      ctx.fill(path);
+    } else {
+      ctx.stroke(path);
+    }
+    
     ctx.restore();
     return;
   }
+
   ctx.translate(...text.pos);
   ctx.translate(text.thickness * 0.5, 0);
   var angle = -text.angle;
@@ -239,17 +251,14 @@ function drawPolylineShape(ctx, shape, color) {
   ctx.restore();
 }
 
-function drawDrawing(ctx, scalefactor, drawing, color) {
-  console.log('draw drawing?');
+function drawDrawing(ctx, scalefactor, drawing, color) {  
   if (["segment", "arc", "circle", "curve"].includes(drawing.type)) {
     drawedge(ctx, scalefactor, drawing, color);
   } else if (drawing.type == "polygon") {
     drawPolygonShape(ctx, drawing, color);
-  } else if (drawing.type == "text") {
-    console.log('Text is here')
+  } else if (drawing.type == "text") {    
     drawText(ctx, drawing, color);
-  } else if (drawing.type == "polyline") {
-    console.log('Polyline is here')
+  } else if (drawing.type == "polyline") {    
     drawPolylineShape(ctx, drawing, color);
   }
 }
@@ -415,6 +424,7 @@ function drawOrphanPads(canvas, layer, scalefactor, highlight, highlightedPads) 
 
 function drawFootprints(canvas, layer, scalefactor, highlight) {
   var ctx = canvas.getContext("2d");
+  ctx.save();
   ctx.lineWidth = 3 / scalefactor;
   var style = getComputedStyle(topmostdiv);
   var padColor = style.getPropertyValue('--pad-color');
@@ -431,6 +441,7 @@ function drawFootprints(canvas, layer, scalefactor, highlight) {
       drawFootprint(ctx, layer, scalefactor, mod, padColor, padHoleColor, outlineColor, highlight, outline);
     }
   }
+  ctx.restore();
 }
 
 function drawBgLayer(layername, canvas, layer, scalefactor, edgeColor, polygonColor, textColor) {
@@ -440,8 +451,8 @@ function drawBgLayer(layername, canvas, layer, scalefactor, edgeColor, polygonCo
       drawedge(ctx, scalefactor, d, edgeColor);
     } else if (d.type == "polygon") {
       drawPolygonShape(ctx, d, polygonColor);
-    } else {
-      drawText(ctx, d, textColor);
+    } else if (d.type == "text") {
+      drawText(ctx, d, polygonColor);
     }
   }
 }
@@ -476,6 +487,7 @@ function drawTracks(canvas, layer, color, highlight) {
 
 function drawZones(canvas, layer, color, highlight) {
   ctx = canvas.getContext("2d");
+  ctx.save();
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
   ctx.lineJoin = "round";
@@ -490,6 +502,7 @@ function drawZones(canvas, layer, color, highlight) {
       ctx.stroke(zone.path2d);
     }
   }
+  ctx.restore();
 }
 
 function clearCanvas(canvas, color = null) {

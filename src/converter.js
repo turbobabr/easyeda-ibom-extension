@@ -178,9 +178,10 @@ const parseTexts = (data, layerType, ignoreSpecialText = false) => {
       val: isVal ? 1 : undefined
     };
 
-    return {
-      type: (isRef || isVal) ? 'text' : 'polyline',
+    return {    
+      type: 'text',
       svgpath: obj.pathStr,
+      useTrueTypeFontRendering: toString.call(obj.fontFamily) === '[object String]' && obj.fontFamily.length > 0,
       thickness: parseFloat(obj.strokeWidth),
       width: parseFloat(obj.strokeWidth),
       ...flags
