@@ -110,7 +110,8 @@ const parseVias = (data) => {
     return {
       start: [via.x, via.y],
       end: [via.x, via.y],
-      width: via.diameter
+      width: via.diameter,
+      net: via.net,
     }
   });
 }

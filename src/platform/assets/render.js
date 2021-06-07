@@ -1,6 +1,7 @@
 /* PCB rendering code */
 
 var emptyContext2d = document.createElement("canvas").getContext("2d");
+var hitTestContext2d = document.createElement("canvas").getContext("2d");
 
 function deg2rad(deg) {
   return deg * Math.PI / 180;
@@ -26,13 +27,10 @@ function drawText(ctx, text, color) {
   ctx.lineJoin = "round";
   ctx.lineWidth = text.thickness;
 
-  console.log(text);
-
   if ("svgpath" in text) {    
     // TODO: This path must be cached!
     const path = new Path2D(text.svgpath);
-    if(text.useTrueTypeFontRendering) {      
-      console.log('do we ever get in here?');
+    if(text.useTrueTypeFontRendering) {            
       ctx.fill(path);
     } else {
       ctx.stroke(path);
@@ -791,7 +789,21 @@ function netHitScan(layer, x, y) {
   // Check track segments
   if (settings.renderTracks && pcbdata.tracks) {
     for(var track of pcbdata.tracks[layer]) {
-      if ('radius' in track) {
+      if(track.type === 'polyline') {
+        const path = getPolygonsPath(track);
+        if(path) {
+          hitTestContext2d.save();
+          hitTestContext2d.lineWidth = track.width;
+          
+          if(hitTestContext2d.isPointInStroke(path,x,y)) {
+            hitTestContext2d.restore();
+            return track.net;            
+          }
+          
+          hitTestContext2d.restore();          
+        }        
+
+      } else if ('radius' in track) {
         if (pointWithinDistanceToArc(x, y, ...track.center, track.radius, track.startangle, track.endangle, track.width / 2)) {
           return track.net;
         }
