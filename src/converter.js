@@ -117,21 +117,14 @@ const parseVias = (data) => {
   });
 }
 
-const parseCopper = (data, layerType) => {
-  return [
-    ...parseTracks(data, layerType),
-    ...parseSolidRegions(data, layerType),
-    ...parseVias(data)    
-  ];
-};
-
 const parseArcs = (data, layerType) => {
   return _.map(fetchObjects(data,'ARC',layerType), (arc) => {
     if (arc.d) {
       return {
         type: "arc",
         width: arc.strokeWidth,
-        svgpath: arc.d
+        svgpath: arc.d,
+        net: arc.net
       };
     };
   });
@@ -150,7 +143,8 @@ const parseCircles = (data, layerType) => {
       _svgpath: path, // This path is used in bbox calculation routine only.
       start: [circle.cx, circle.cy],
       radius: circle.r,
-      width: circle.strokeWidth
+      width: circle.strokeWidth,
+      net: circle.net
     }
   });
 };
@@ -189,6 +183,7 @@ const parseTexts = (data, layerType, ignoreSpecialText = false) => {
       useTrueTypeFontRendering: toString.call(obj.fontFamily) === '[object String]' && obj.fontFamily.length > 0,
       thickness: parseFloat(obj.strokeWidth),
       width: parseFloat(obj.strokeWidth),
+      net: obj.net,
       ...flags
     };
   }));
@@ -199,13 +194,15 @@ const parseSvgNodes = (data, layerType) => {
     if (obj.nodeName === 'path') {
       return {
         type: 'polygon',
-        svgpath: obj.attrs.d
+        svgpath: obj.attrs.d,
+        net: obj.net
       };
     } else if (obj.nodeName === 'g') {
       return _.map(obj.childNodes, (child) => {
         return {
           type: 'polygon',
-          svgpath: child.attrs.d
+          svgpath: child.attrs.d,
+          net: obj.net
         };
       });
     }
@@ -301,6 +298,26 @@ const parsePads = (data) => {
   });
 };
 
+const parseCopper = (data, layerType) => {
+  return [
+    ...parseTracks(data, layerType),
+    ...parseSolidRegions(data, layerType),
+    ...parseVias(data),    
+    ...parseSvgNodes(data, layerType),
+    ...parseTexts(data, layerType, true),
+
+    // TODO: To be revised
+    // ...parseArcs(data, layerType),
+    // ...parseCircles(data, layerType),    
+  ];
+};
+
+const parseCopperForFootprints = (data, layerType) => {
+  return _.flatten(_.map(data.FOOTPRINT,(footprint) => {
+    return parseCopper(footprint, layerType);
+  }));
+};
+
 const parseZones = (data, layerType) => {
   const zones = _.filter(_.map(data.COPPERAREA, (area) => area), {
     layerid: layerType
@@ -321,6 +338,7 @@ const parseZones = (data, layerType) => {
     });
   }));
 }
+
 
 const parseTopZones = (data) => {
   return parseZones(data, LayerType.Top);
@@ -376,6 +394,13 @@ const parseBoardSilk = (data, layerType) => {
   ];
 };
 
+const parseBoardCopper = (data, layerType) => {
+  return [
+    ...parseCopperForFootprints(data, layerType),
+    ...parseCopper(data, layerType)
+  ];
+};
+
 // FIXME: Refactor - should go to
 const bboxToRect = (bbox) => {
   return {
@@ -387,6 +412,9 @@ const bboxToRect = (bbox) => {
 };
 
 const parseFootprintRectBeforeRotation = (footprint, isTop) => {
+  // TODO: Should be refactored!
+
+  // Silk
   const silk = parseSilk(footprint, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);  
   const silkScreenRects = _.compact(_.map(silk,(item) => {
     if(!item.svgpath && !item._svgpath) {
@@ -406,6 +434,27 @@ const parseFootprintRectBeforeRotation = (footprint, isTop) => {
     return bboxToRect(svgPathBbox(transformedPath))
   }));
 
+  // Copper
+  const copper = parseCopper(footprint, isTop ? LayerType.Top : LayerType.Bottom);  
+  const copperRects = _.compact(_.map(copper,(item) => {
+    if(!item.svgpath && !item._svgpath) {
+      return;
+    }
+
+    const sourceSvgPath = item._svgpath || item.svgpath;
+
+    const origin = {
+      x: parseFloat(footprint.head.x),
+      y: parseFloat(footprint.head.y)
+    };
+
+    const rotation = parseFloat(footprint.head.rotation || '0');
+    const transformedPath = svgPathTransform(sourceSvgPath).rotate(rotation,origin.x,origin.y).toString();
+    
+    return bboxToRect(svgPathBbox(transformedPath))
+  }));
+
+  // Pads
   const parsedPads = parsePads(footprint);
   const padRects = _.compact(_.map(parsedPads,(pad) => {
     const origin = {
@@ -435,7 +484,7 @@ const parseFootprintRectBeforeRotation = (footprint, isTop) => {
     return bboxToRect(svgPathBbox(transformedPath))
   }));
 
-  return rectUnion([...silkScreenRects, ...padRects])
+  return rectUnion([...silkScreenRects, ...padRects, ...copperRects]);
 }
 
 
@@ -559,8 +608,8 @@ export const convert = (source, meta, easyBom) => {
       date: meta.date,
     },
     tracks: {
-      F: parseCopper(source,LayerType.Top),
-      B: parseCopper(source,LayerType.Bottom)
+      F: parseBoardCopper(source,LayerType.Top),
+      B: parseBoardCopper(source,LayerType.Bottom)
     },
     zones: {
       F: parseTopZones(source),

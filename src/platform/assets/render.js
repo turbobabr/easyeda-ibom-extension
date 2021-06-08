@@ -508,19 +508,24 @@ function drawTracks(canvas, layer, color, highlight) {
       drawPolylineShape(ctx,track,color);
     } else if(track.type === 'polygon') {
       drawPolygonShape(ctx, track, color);
+    } else if(track.type === 'text') {
+      drawText(ctx, track, color);
     } else {
-      ctx.beginPath();
       if ('radius' in track) {
+        ctx.beginPath();
         ctx.arc(
             ...track.center,
             track.radius,
             deg2rad(track.startangle),
             deg2rad(track.endangle));
-      } else {
+        ctx.stroke();
+      } else if('start' in track && 'end' in track) {
+        ctx.beginPath();
         ctx.moveTo(...track.start);
         ctx.lineTo(...track.end);
+        ctx.stroke();
       }
-      ctx.stroke();
+      
     }
 
   }
@@ -839,6 +844,8 @@ function pointWithinPad(x, y, pad) {
 }
 
 function netHitScan(layer, x, y) {
+  // TODO: Should be refactored
+
   // Check track segments
   if (settings.renderTracks && pcbdata.tracks) {
     for(var track of pcbdata.tracks[layer]) {
@@ -861,11 +868,13 @@ function netHitScan(layer, x, y) {
         if(path && hitTestContext2d.isPointInPath(path,x,y)) {          
           return track.net;                      
         }                     
+      } else if(track.type === 'text') {
+        // TODO: To implement taking in account TrueType fonts.
       } else if ('radius' in track) {
         if (pointWithinDistanceToArc(x, y, ...track.center, track.radius, track.startangle, track.endangle, track.width / 2)) {
           return track.net;
         }
-      } else {
+      } else if('start' in track && 'end' in track) {
         if (pointWithinDistanceToSegment(x, y, ...track.start, ...track.end, track.width / 2)) {
           return track.net;
         }
