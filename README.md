@@ -15,7 +15,7 @@ Comparing to original solution, `iBom for EasyEDA` is available right within `Ea
 
 ## Installation
 
-1. Download [easyeda-ibom-v0.0.10.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.0.10/easyeda-ibom-v0.0.10.zip)
+1. Download [easyeda-ibom-v0.1.0.zip](https://github.com/turbobabr/easyeda-ibom-extension/releases/download/v0.1.0/easyeda-ibom-v0.1.0.zip)
 2. Un-zip the downloaded archive on your hard drive.
 3. Go to `Extension Settings` dialog by using main menu `Advanced -> Extensions -> Extensions Settings...`.
 4. Click `Load Extension...` button and add all the files in from the extracted folder using `Select Files...` button. 
