@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import format from 'date-fns/format';
-import { registerCommand, getSource, getActiveTabInfo, getGVars, getBOMFromPCBEditor, makeCommandId} from './easy-api';
+import { registerCommand, getSource, getActiveTabInfo, getGVars, getBOMFromPCBEditor, makeCommandId, getManifest } from './easy-api';
+import { replaceVars } from './utils';
 import { isRunnerAround } from './runner-api';
 import './styles.scss';
 import frameHTML from './frame.html';
@@ -32,7 +33,13 @@ const fetchMeta = () => {
 };
 
 registerCommand('showInteractiveBOM', () => {
-  $('body').append(frameHTML);
+
+  const manifest = getManifest();  
+  const frameHTMLWithVersion = replaceVars(frameHTML, {
+    version: manifest.version
+  });
+
+  $('body').append(frameHTMLWithVersion);
   $('#ibom-close-button').click(() => {
     $('#ibom-container').remove();
   });

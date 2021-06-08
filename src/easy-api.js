@@ -1,3 +1,5 @@
+import { get } from 'lodash';
+
 export const shortId = () => {
   return 'ibom';
 };
@@ -48,4 +50,8 @@ export const getBOMFromPCBEditor = () => {
     cmd: 'getBOMFromPCBEditor',
     args: []
   });
+};
+
+export function getManifest() {
+  return get(easyeda,'extension.instances.ibom.manifest');
 };
