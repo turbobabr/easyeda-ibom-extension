@@ -404,23 +404,6 @@ const parseFootprintRectBeforeRotation = (footprint, isTop) => {
   }));
 
   const parsedPads = parsePads(footprint);
-
-  /*
-  {
-      layers: mapLayerType(pad.layerid),
-      pos: [pad.x,pad.y],
-      size: [pad.width,pad.height],
-      angle: - parseFloat(pad.rotation),
-      pin1: pad.number === '1' ? 1 : undefined,
-      shape: mapShape(pad.shape),
-      type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
-      drillsize: [holeD, isSlot ? parseFloat(pad.holeLength) : holeD],
-      drillshape: isSlot ? 'oblong' : undefined,
-      holeCenterPoint: parseHoleCenterPoint(pad),      
-      polygon: pad.pointArr,
-      net: pad.net
-    };
-  */
   const padRects = _.compact(_.map(parsedPads,(pad) => {
     const origin = {
       x: pad.pos[0],
@@ -433,14 +416,11 @@ const parseFootprintRectBeforeRotation = (footprint, isTop) => {
     };
 
     const rect = rectWithSizeCenteredAroundPoint(size, origin);
-    console.log(rect);
 
     const padPath = path();
     padPath.rect(rect.x,rect.y,rect.width,rect.height);
 
     const sourceSvgPath = padPath.toString();
-    console.log(sourceSvgPath);
-
     const footPrintOrigin = {
       x: parseFloat(footprint.head.x),
       y: parseFloat(footprint.head.y)
