@@ -1,4 +1,4 @@
-export const rectUnion = (rects = []) => {
+export function rectUnion(rects = []) {
   let minX, maxX, minY, maxY = 0;
   for(let i=0;i<rects.length;i++) {
     const rc = rects[i];
@@ -20,5 +20,12 @@ export const rectUnion = (rects = []) => {
     y: minY,
     width: maxX - minX,
     height: maxY - minY
+  };
+}
+
+export function pointBetweenPointsAt(p1,p2,position = 0.5) {
+  return {
+    x: p1.x + (p2.x - p1.x) * position,
+    y: p1.y + (p2.y - p1.y) * position
   };
 }

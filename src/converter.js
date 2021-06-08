@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { svgPathBbox } from 'svg-path-bbox';
-import { rectUnion } from './geom-fns';
+import { rectUnion, pointBetweenPointsAt } from './geom-fns';
 const svgPathTransform = require('svgpath');
 
 export const LayerType = {
@@ -248,20 +248,49 @@ const parsePads = (data) => {
     }
   };
 
+  const isSlotShapedHole = (pad) => {
+    return parseFloat(pad.holeLength) !== 0 && !_.isUndefined(pad.slotPointArr);
+  }
+
+  const parseHoleCenterPoint = (pad) => {
+    const isSlot = isSlotShapedHole(pad);
+    const parseDefaultCenterPoint = () => {
+      return {
+        x: parseFloat(pad.holeCenter.x) || pad.x,
+        y: parseFloat(pad.holeCenter.y) || pad.y
+      };
+    };
+
+    if(!isSlot) {
+      return parseDefaultCenterPoint();
+    }
+
+    if(pad.slotPointArr.length > 2) {
+      console.log(`[iBom]: Warning: Slot points array has more than two points!`);
+    }
+
+    if(pad.slotPointArr.length < 2) {
+      console.log(`[iBom]: Warning: Slot points array has less than two points!`);
+      return parseDefaultCenterPoint();
+    }
+
+    return pointBetweenPointsAt(_.first(pad.slotPointArr),_.last(pad.slotPointArr));
+  };
+
   return _.map(data.PAD,(pad) => {    
+    const isSlot = isSlotShapedHole(pad);
+    const holeD = parseFloat(pad.holeR) * 2;
     return {
       layers: mapLayerType(pad.layerid),
       pos: [pad.x,pad.y],
       size: [pad.width,pad.height],
-      angle: parseFloat(pad.rotation),
+      angle: - parseFloat(pad.rotation),
       pin1: pad.number === '1' ? 1 : undefined,
       shape: mapShape(pad.shape),
       type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
-      drillsize: [parseFloat(pad.holeR) * 2],
-      holeCenterPoint: {
-        x: parseFloat(pad.holeCenter.x),
-        y: parseFloat(pad.holeCenter.y)
-      },
+      drillsize: [holeD, isSlot ? parseFloat(pad.holeLength) : holeD],
+      drillshape: isSlot ? 'oblong' : undefined,
+      holeCenterPoint: parseHoleCenterPoint(pad),      
       polygon: pad.pointArr,
       net: pad.net
     };
