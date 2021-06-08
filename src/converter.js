@@ -248,7 +248,7 @@ const parsePads = (data) => {
     }
   };
 
-  return _.map(data.PAD,(pad) => {
+  return _.map(data.PAD,(pad) => {    
     return {
       layers: mapLayerType(pad.layerid),
       pos: [pad.x,pad.y],
@@ -258,6 +258,10 @@ const parsePads = (data) => {
       shape: mapShape(pad.shape),
       type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
       drillsize: [parseFloat(pad.holeR) * 2],
+      holeCenterPoint: {
+        x: parseFloat(pad.holeCenter.x),
+        y: parseFloat(pad.holeCenter.y)
+      },
       polygon: pad.pointArr,
       net: pad.net
     };

@@ -330,7 +330,12 @@ function drawPad(ctx, pad, color, outline) {
 function drawPadHole(ctx, pad, padHoleColor) {
   if (pad.type != "th") return;
   ctx.save();
-  ctx.translate(...pad.pos);
+  if(pad.holeCenterPoint) {
+    ctx.translate(pad.holeCenterPoint.x, pad.holeCenterPoint.y);    
+  } else {
+    ctx.translate(...pad.pos);
+  }
+  
   ctx.rotate(deg2rad(pad.angle));
   ctx.fillStyle = padHoleColor;
   if (pad.drillshape == "oblong") {
