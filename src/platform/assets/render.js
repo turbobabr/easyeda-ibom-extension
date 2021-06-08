@@ -506,6 +506,8 @@ function drawTracks(canvas, layer, color, highlight) {
 
     if(track.type === 'polyline') {
       drawPolylineShape(ctx,track,color);
+    } else if(track.type === 'polygon') {
+      drawPolygonShape(ctx, track, color);
     } else {
       ctx.beginPath();
       if ('radius' in track) {
@@ -854,6 +856,11 @@ function netHitScan(layer, x, y) {
           hitTestContext2d.restore();          
         }        
 
+      } else if(track.type === 'polygon') {
+        const path = getPolygonsPath(track);
+        if(path && hitTestContext2d.isPointInPath(path,x,y)) {          
+          return track.net;                      
+        }                     
       } else if ('radius' in track) {
         if (pointWithinDistanceToArc(x, y, ...track.center, track.radius, track.startangle, track.endangle, track.width / 2)) {
           return track.net;

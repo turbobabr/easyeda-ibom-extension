@@ -120,7 +120,8 @@ const parseVias = (data) => {
 const parseCopper = (data, layerType) => {
   return [
     ...parseTracks(data, layerType),
-    ...parseVias(data)
+    ...parseSolidRegions(data, layerType),
+    ...parseVias(data)    
   ];
 };
 
@@ -158,7 +159,9 @@ const parseSolidRegions = (data, layerType) => {
   return _.map(fetchObjects(data,'SOLIDREGION',layerType), (obj) => {
     return {
       type: "polygon",
-      svgpath: obj.pathStr
+      svgpath: obj.pathStr,
+      start: [0,0], end: [0,0], // Dummy to keep ibom happy.
+      net: obj.net,
     }
   })
 };
