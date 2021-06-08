@@ -358,21 +358,39 @@ function drawFootprint(ctx, layer, scalefactor, footprint, padColor, padHoleColo
       drawPadHole(ctx, pad, padHoleColor);
     }
   }
-  // draw crosshair
-  if (highlight && settings.showCrosshair) {
-    ctx.globalAlpha = 0.75;
-    ctx.lineWidth = 4 / scalefactor;
-    ctx.strokeStyle = padColor;
-    ctx.beginPath();
-    ctx.moveTo(footprint.center[0]-4000, footprint.center[1]);
-    ctx.lineTo(footprint.center[0]+4000, footprint.center[1]);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(footprint.center[0], footprint.center[1]-4000);
-    ctx.lineTo(footprint.center[0], footprint.center[1]+4000);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
+}
+
+function drawCrosshair(canvas, x, y, scalefactor, color) {
+  if(!settings.showCrosshair) {
+    return;
   }
+
+  var ctx = canvas.getContext("2d");
+
+  HTMLFormControlsCollection.log
+  
+  ctx.save();
+  ctx.globalAlpha = 0.75;
+  ctx.lineWidth = 2 / scalefactor;
+  ctx.strokeStyle = color;
+
+  // TODO: Should calculate a proper bbox for the view port.
+  const dummyOffset = 4000;
+
+  // horz line
+  ctx.beginPath();
+  ctx.moveTo(x - dummyOffset, y);
+  ctx.lineTo(x + dummyOffset, y);
+  ctx.stroke();
+
+  // vert line
+  ctx.beginPath();
+  ctx.moveTo(x, y - dummyOffset);
+  ctx.lineTo(x, y + dummyOffset);
+  ctx.stroke();
+
+  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
 function drawEdgeCuts(canvas, scalefactor) {
@@ -558,6 +576,16 @@ function drawHighlightsOnLayer(canvasdict, clear = true) {
   if (highlightedFootprints.length > 0) {
     drawFootprints(canvasdict.highlight, canvasdict.layer,
       canvasdict.transform.s * canvasdict.transform.zoom, true);
+  }
+
+  // Draw crosshairs
+  if (highlightedFootprints.length > 0) {
+    for(var i = 0; i < pcbdata.footprints.length; i++) {
+      const footprint = pcbdata.footprints[i];
+      if(highlightedFootprints.includes(i) && footprint.layer === canvasdict.layer) {
+        drawCrosshair(canvasdict.highlight, footprint.center[0], footprint.center[1], canvasdict.transform.s * canvasdict.transform.zoom, 'red');
+      }
+    }
   }
 
   if (highlightedNet !== null) {
