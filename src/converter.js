@@ -236,8 +236,15 @@ const parsePads = (data) => {
       case 'OVAL':
         return 'oval';
 
+      case 'POLYGON':
+         return 'polygon';
+
       default:
-        return 'oval';
+        {
+          console.log('UNKNOWN PAD SHAPE',shape);
+          console.log(data);
+          return 'oval';
+        }
     }
   };
 
@@ -246,11 +253,12 @@ const parsePads = (data) => {
       layers: mapLayerType(pad.layerid),
       pos: [pad.x,pad.y],
       size: [pad.width,pad.height],
-      angle: - pad.rotation,
+      angle: parseFloat(pad.rotation),
       pin1: pad.number === '1' ? 1 : undefined,
       shape: mapShape(pad.shape),
       type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
       drillsize: [parseFloat(pad.holeR) * 2],
+      polygon: pad.pointArr,
       net: pad.net
     };
   });

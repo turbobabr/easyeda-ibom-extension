@@ -284,6 +284,21 @@ function getCachedPadPath(pad) {
       pad.path2d = getChamferedRectPath(pad.size, pad.radius, pad.chamfpos, pad.chamfratio)
     } else if (pad.shape == "custom") {
       pad.path2d = getPolygonsPath(pad);
+    } else if(pad.shape === "polygon") {      
+      pad.path2d = new Path2D();
+      if(pad.polygon.length > 1) {
+        const pos = {
+          x: pad.pos[0],
+          y: pad.pos[1]
+        };
+
+        pad.path2d.moveTo(pad.polygon[0].x - pos.x, pad.polygon[0].y - pos.y);
+        for (var i = 1; i < pad.polygon.length; i++) {
+          const point = pad.polygon[i];          
+          pad.path2d.lineTo(point.x - pos.x, point.y - pos.y);
+        }
+        pad.path2d.closePath();              
+      }
     }
   }
   return pad.path2d;
@@ -292,7 +307,12 @@ function getCachedPadPath(pad) {
 function drawPad(ctx, pad, color, outline) {
   ctx.save();
   ctx.translate(...pad.pos);
-  ctx.rotate(deg2rad(pad.angle));
+  if(pad.shape !== 'polygon') {
+    ctx.rotate(deg2rad(pad.angle));  
+  } else {
+    ctx.rotate(deg2rad(0));  
+  }
+  
   if (pad.offset) {
     ctx.translate(...pad.offset);
   }
