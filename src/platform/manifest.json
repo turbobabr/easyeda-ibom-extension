@@ -27,6 +27,29 @@
           "command": "ibom.visitGithubPage"
         }
       ]
-    }
+    },
+    "commands": [
+      {
+        "title": "Launch iBom",
+        "scope": "pcb",
+        "category": ["iBom"],
+        "description": "Shows built in iBom application",
+        "command": "ibom.showInteractiveBOM"
+      },
+      {
+        "title": "Generate & Download iBom HTML",
+        "scope": "pcb",
+        "category": ["iBom"],
+        "description": "Generates a stand-alone iBom HTML representation",
+        "command": "ibom.generateAndDownload"
+      },
+      {
+        "title": "Visit iBom Github Page",
+        "scope": "pcb",
+        "category": ["iBom"],
+        "description": "Visit iBom's project GitHub page",
+        "command": "ibom.visitGithubPage"
+      }
+    ]
   }
 }
