@@ -149,15 +149,19 @@ const parseCircles = (data, layerType) => {
   });
 };
 
-const parseSolidRegions = (data, layerType) => {
-  return _.map(fetchObjects(data,'SOLIDREGION',layerType), (obj) => {
+const parseSolidRegions = (data, layerType, ignoreTypes = ['cutout','npth']) => {
+  return _.compact(_.map(fetchObjects(data,'SOLIDREGION',layerType), (obj) => {
+    if(ignoreTypes.includes(obj.type)) {
+      return;
+    }
+    
     return {
       type: "polygon",
       svgpath: obj.pathStr,
       start: [0,0], end: [0,0], // Dummy to keep ibom happy.
       net: obj.net,
     }
-  })
+  }));
 };
 
 const parseTexts = (data, layerType, ignoreSpecialText = false) => {
