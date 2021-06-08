@@ -62,6 +62,7 @@
     "repo": "easyeda-ibom-extension"
   },
   "dependencies": {
+    "d3-path": "^3.0.1",
     "date-fns": "^2.19.0",
     "lodash": "^4.17.21",
     "svg-path-bbox": "^0.2.0",

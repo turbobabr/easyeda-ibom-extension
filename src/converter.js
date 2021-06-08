@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { svgPathBbox } from 'svg-path-bbox';
-import { rectUnion, pointBetweenPointsAt } from './geom-fns';
+import { rectUnion, pointBetweenPointsAt, rectWithSizeCenteredAroundPoint } from './geom-fns';
+import { path } from 'd3-path';
 const svgPathTransform = require('svgpath');
 
 export const LayerType = {
@@ -383,9 +384,8 @@ const bboxToRect = (bbox) => {
 };
 
 const parseFootprintRectBeforeRotation = (footprint, isTop) => {
-  const silk = parseSilk(footprint, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);
-  
-  const rects = _.compact(_.map(silk,(item) => {
+  const silk = parseSilk(footprint, isTop ? LayerType.TopSilk : LayerType.BottomSilk, true);  
+  const silkScreenRects = _.compact(_.map(silk,(item) => {
     if(!item.svgpath && !item._svgpath) {
       return;
     }
@@ -403,7 +403,56 @@ const parseFootprintRectBeforeRotation = (footprint, isTop) => {
     return bboxToRect(svgPathBbox(transformedPath))
   }));
 
-  return rectUnion(rects)
+  const parsedPads = parsePads(footprint);
+
+  /*
+  {
+      layers: mapLayerType(pad.layerid),
+      pos: [pad.x,pad.y],
+      size: [pad.width,pad.height],
+      angle: - parseFloat(pad.rotation),
+      pin1: pad.number === '1' ? 1 : undefined,
+      shape: mapShape(pad.shape),
+      type: pad.layerid === LayerType.MultiLayer ? 'th' : 'smd',
+      drillsize: [holeD, isSlot ? parseFloat(pad.holeLength) : holeD],
+      drillshape: isSlot ? 'oblong' : undefined,
+      holeCenterPoint: parseHoleCenterPoint(pad),      
+      polygon: pad.pointArr,
+      net: pad.net
+    };
+  */
+  const padRects = _.compact(_.map(parsedPads,(pad) => {
+    const origin = {
+      x: pad.pos[0],
+      y: pad.pos[1]
+    };
+
+    const size = {
+      width: pad.size[0],
+      height: pad.size[1]
+    };
+
+    const rect = rectWithSizeCenteredAroundPoint(size, origin);
+    console.log(rect);
+
+    const padPath = path();
+    padPath.rect(rect.x,rect.y,rect.width,rect.height);
+
+    const sourceSvgPath = padPath.toString();
+    console.log(sourceSvgPath);
+
+    const footPrintOrigin = {
+      x: parseFloat(footprint.head.x),
+      y: parseFloat(footprint.head.y)
+    };
+
+    const rotation = parseFloat(footprint.head.rotation || '0');
+    const transformedPath = svgPathTransform(sourceSvgPath).rotate(rotation,footPrintOrigin.x,footPrintOrigin.y).toString();
+    
+    return bboxToRect(svgPathBbox(transformedPath))
+  }));
+
+  return rectUnion([...silkScreenRects, ...padRects])
 }
 
 

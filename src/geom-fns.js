@@ -29,3 +29,12 @@ export function pointBetweenPointsAt(p1,p2,position = 0.5) {
     y: p1.y + (p2.y - p1.y) * position
   };
 }
+
+export function rectWithSizeCenteredAroundPoint(size,point) {
+  return { 
+    x: point.x - size.width / 2, 
+    y: point.y - size.height/2, 
+    width: size.width, 
+    height: size.height
+  };
+}
